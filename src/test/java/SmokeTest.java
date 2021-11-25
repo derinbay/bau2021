@@ -1,32 +1,11 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.*;
 
-public class SmokeTest {
-
-    WebDriver driver;
-
-    @BeforeMethod
-    public void startUp() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--disable-notifications");
-
-        String projectPath = System.getProperties().get("user.dir").toString();
-        System.setProperty("webdriver.chrome.driver", projectPath + "/src/main/resources/chromedriver");
-        driver = new ChromeDriver(options);
-
-        driver.get("https://www.trendyol.com");
-        WebElement modalCloseButton = driver.findElement(By.cssSelector(".modal-close"));
-        modalCloseButton.click();
-    }
+public class SmokeTest extends BaseTest {
 
     @Test
     public void goToTrendyolHomepage() {
@@ -43,33 +22,41 @@ public class SmokeTest {
         WebElement productCard = driver.findElement(By.cssSelector(".prdct-cntnr-wrppr"));
         assertTrue(productCard.isDisplayed());
 
-        WebElement searchResultTextElement = driver.findElement(By.cssSelector(".dscrptn > h1"));
+        WebElement searchResultTextElement = driver.findElement(By.cssSelector(".dscrptn  h1"));
         String searchResultText = searchResultTextElement.getText();
         assertEquals(searchResultText, "kitap");
     }
 
     @Test
-    public void searchAKeywordWithButton() throws InterruptedException {
-        WebElement searchBoxTextBox = driver.findElement(By.cssSelector(".search-box"));
-        searchBoxTextBox.sendKeys("kitap");
-        Thread.sleep(4000);
-        WebElement searchButton = driver.findElement(By.cssSelector(".search-icon"));
-        searchButton.click();
+    public void searchAKeywordWithButton() {
+        String keyword = "kitap";
+        Homepage homepage = new Homepage(driver);
+        SearchResultPage searchResultPage = homepage.search(keyword + ENTER);
 
-        WebElement productCard = driver.findElement(By.cssSelector(".prdct-cntnr-wrppr"));
-        assertTrue(productCard.isDisplayed());
+        assertTrue(searchResultPage.isProductCardsDisplayed());
 
-        WebElement searchResultTextElement = driver.findElement(By.cssSelector(".dscrptn > h1"));
-        String searchResultText = searchResultTextElement.getText();
-        assertEquals(searchResultText, "kitap");
+        String resultText = searchResultPage.getResultText();
+        assertEquals(resultText, keyword);
     }
 
-    @AfterMethod
-    public void tearDown() {
-        driver.quit();
-    }
+    @Test
+    public void shouldLogin() {
+        /**
+         * happy path:
+         * 1- anasayfayi ac
+         * 2- giris yapa tikla
+         * 3- user pass gir
+         * 4- giris yap butona tkla
+         * assertion
+         * ----------
+         * anasayfaya yonlendirildim
+         * sag ustteki giris yap butonu hesabim'a dondu
+         * */
+        Homepage homepage = new Homepage(driver);
+        LoginPage loginPage = homepage.goToLoginPage();
+        homepage = loginPage.login();
 
-    //wait yapilari:
-    //implicitWait
-    //explicitWait
+        String accountText = homepage.getAccountText();
+        assertEquals(accountText, "Hesabım");
+    }
 }
