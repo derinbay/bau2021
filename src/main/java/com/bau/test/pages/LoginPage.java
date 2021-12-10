@@ -20,8 +20,8 @@ public class LoginPage extends BasePage {
     public Homepage login() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        sendKeys(loginEmailLocator, "***REMOVED***");
-        sendKeys(loginPasswordLocator, "***REMOVED***");
+        sendKeys(loginEmailLocator, "user email");
+        sendKeys(loginPasswordLocator, "user password");
         click(loginButtonLocator);
 
         wait.until(ExpectedConditions.urlToBe("https://www.trendyol.com/butik/liste/2/erkek"));
