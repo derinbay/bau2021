@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="test-bau-2021" />
+        <module name="bau2021" />
       </profile>
     </annotationProcessing>
   </component>
