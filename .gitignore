@@ -109,7 +109,7 @@ $RECYCLE.BIN/
 *.lnk
 
 .allure
-.allure-results
+allure-results
 
 screenshots/
 
