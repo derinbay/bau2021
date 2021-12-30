@@ -1,29 +1,55 @@
+import com.bau.test.models.Movie;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.when;
+import static org.hamcrest.Matchers.hasKey;
 
 public class ApiTest {
 
     @Test
-    public void firstTest() {
+    public void shouldValidateTitle() {
         String keyword = "the matrix";
-        Response response = when()
+
+        Movie movie = when()
                 .get("http://www.omdbapi.com/?apikey=28ca4305&t=" + keyword)
                 .then()
+                .extract().as(Movie.class);
+
+        Assert.assertEquals(movie.getTitle(), "The Matrix");
+    }
+
+    @Test
+    public void shouldGoToImageSuccessfully() {
+        String keyword = "the matrix";
+
+        Movie movie = when()
+                .get("http://www.omdbapi.com/?apikey=28ca4305&t=" + keyword)
+                .then()
+                .extract().as(Movie.class);
+
+        String url = movie.getPoster();
+
+        when()
+                .get(url)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void shouldGetPropertiesCorrectly() {
+        String keyword = "the matrix";
+
+        when()
+                .get("http://www.omdbapi.com/?apikey=28ca4305&t=" + keyword)
+                .then()
+                .assertThat()
+                .body("$", hasKey("Title"))
+                .body("$", hasKey("Genre"))
+                .body("$", hasKey("Director"))
                 .extract()
                 .response();
-
-        String title = response.jsonPath().get("Title");
-        String year = response.jsonPath().get("Year");
-        String runtime = response.jsonPath().get("Runtime");
-        String ratings = response.jsonPath().get("Ratings[0].Source");
-
-        System.out.println("Title: " + title);
-        System.out.println("Year: " + year);
-        System.out.println("Runtime: " + runtime);
-        System.out.println("Ratings 0 Source: " + ratings);
     }
 
     @Test
